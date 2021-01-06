@@ -1,4 +1,4 @@
-package weishen_gin_lib
+package ginlib
 
 import (
 	"github.com/astaxie/beego/logs"

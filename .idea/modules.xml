@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/weishen_gin_lib.iml" filepath="$PROJECT_DIR$/.idea/weishen_gin_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ginlib.iml" filepath="$PROJECT_DIR$/.idea/ginlib.iml" />
     </modules>
   </component>
 </project>

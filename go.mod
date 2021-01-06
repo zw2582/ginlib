@@ -1,4 +1,4 @@
-module weishen_gin_lib
+module ginlib
 
 go 1.13
 

@@ -1,17 +1,17 @@
 package conf_demo
 
 import (
-	"weishen_gin_lib"
+	"ginlib"
 )
 
 func main() {
 	//初始化ini配置
-	weishen_gin_lib.InitIni()
+	ginlib.InitIni()
 
 	//初始化日志
-	weishen_gin_lib.InitLogger()
+	ginlib.InitLogger()
 
 	//初始化redis
-	weishen_gin_lib.InitRedis()
+	ginlib.InitRedis()
 
 }
