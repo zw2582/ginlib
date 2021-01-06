@@ -1,4 +1,4 @@
-module ginlib
+module github.com/zw2582/ginlib
 
 go 1.13
 
