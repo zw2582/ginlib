@@ -8,4 +8,7 @@ ginlib.InitLogger()
 
 //初始化redis
 ginlib.InitRedis()
+
+//初始化腾讯云cos
+ginlib.InitTxCloud()
 ```
