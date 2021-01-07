@@ -9,6 +9,10 @@ import (
 
 var (
 	iniFile *ini.File
+	APP_NAME string
+	APP_HOST string
+	APP_PORT string
+	APP_ENV string
 )
 
 //InitIni 初始化加载配置文件
@@ -35,6 +39,9 @@ func InitIni(inipath ...string)  {
 	default:
 		gin.SetMode(gin.DebugMode)
 	}
+	APP_NAME = iniFile.Section("app").Key("name").Value()
+	APP_HOST = iniFile.Section("app").Key("host").Value()
+	APP_PORT = iniFile.Section("app").Key("port").Value()
 }
 
 //Ini_Str 读取配置文件信息 key格式可以是“section.key”
