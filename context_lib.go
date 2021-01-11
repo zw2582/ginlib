@@ -1,7 +1,6 @@
 package ginlib
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -66,12 +65,4 @@ func (this *Context) InputInt(key string, defs ...int) int {
 	t,_ := strconv.Atoi(val)
 
 	return t
-}
-
-func (this *Context) Uid() int64 {
-	uid := this.GetInt64("auth_uid")
-	if uid == 0 {
-		panic(fmt.Errorf("没有auth_uid，请确保添加了认证middleware"))
-	}
-	return uid
 }
