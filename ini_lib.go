@@ -42,6 +42,7 @@ func InitIni(inipath ...string)  {
 	APP_NAME = iniFile.Section("app").Key("name").Value()
 	APP_HOST = iniFile.Section("app").Key("host").Value()
 	APP_PORT = iniFile.Section("app").Key("port").Value()
+	APP_ENV = iniFile.Section("app").Key("env").Value()
 }
 
 //Ini_Str 读取配置文件信息 key格式可以是“section.key”
