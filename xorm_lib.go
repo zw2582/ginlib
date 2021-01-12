@@ -24,3 +24,8 @@ func XormSync(engine *xorm.Engine) (err error) {
 	}
 	return
 }
+
+//获取需要同步的数据库对象
+func XormGetSyncObjs() []interface{} {
+	return sync_objs
+}
