@@ -1,8 +1,9 @@
 package tests
 
 import (
+	"github.com/zw2582/ginlib"
 	"testing"
-	"ginlib"
+	"time"
 )
 
 func TestOrderNo(t *testing.T)  {
@@ -17,4 +18,16 @@ func TestInvicateCode(t *testing.T)  {
 	} else {
 		t.Log(v)
 	}
+}
+
+func TestRedisCache(t *testing.T)  {
+	ginlib.InitIni("d:/workspace/ginlib/conf_demo/app.ini")
+	ginlib.InitLogger()
+	ginlib.InitRedis()
+	var a int
+	ginlib.RedisCache("caca_test3", &a, time.Minute, func() interface{} {
+		return 55
+	})
+
+	t.Log("a:", a)
 }
