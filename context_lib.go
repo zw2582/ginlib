@@ -11,7 +11,7 @@ type Context struct {
 	*gin.Context
 }
 
-func (this *Context) JsonSucc(data gin.H, msgs ...string)  {
+func (this *Context) JsonSucc(data interface{}, msgs ...string)  {
 	msg := ""
 	if len(msgs) > 0 {
 		msg = strings.Join(msgs, ";")
@@ -19,15 +19,15 @@ func (this *Context) JsonSucc(data gin.H, msgs ...string)  {
 	this.JsonReturn(0, data, msg)
 }
 
-func (this *Context) JsonFail(msg string, datas ... gin.H) {
-	data := make(gin.H)
+func (this *Context) JsonFail(msg string, datas ... interface{}) {
+	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
 	}
 	this.JsonReturn(1, data, msg)
 }
 
-func (this *Context) JsonReturn(code int, data gin.H, msg string) {
+func (this *Context) JsonReturn(code int, data interface{}, msg string) {
 	this.JSON(http.StatusOK, gin.H{
 		"code":code,
 		"data":data,
@@ -35,7 +35,7 @@ func (this *Context) JsonReturn(code int, data gin.H, msg string) {
 	})
 }
 
-func (this *Context) InputString(key string, defs ...string) string {
+func (this *Context) InputStr(key string, defs ...string) string {
 	def := ""
 	if len(defs) > 0 {
 		def = defs[0]
@@ -63,6 +63,23 @@ func (this *Context) InputInt(key string, defs ...int) int {
 		return def
 	}
 	t,_ := strconv.Atoi(val)
+
+	return t
+}
+
+func (this *Context) InputFloat64(key string, defs ...float64) float64 {
+	var def float64
+	if len(defs) > 0 {
+		def = defs[0]
+	}
+	val := this.Query(key)
+	if val == "" {
+		val = this.PostForm(key)
+	}
+	if val == "" {
+		return def
+	}
+	t,_ := strconv.ParseFloat(val, 64)
 
 	return t
 }
