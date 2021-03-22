@@ -19,14 +19,14 @@ func InitTxCloud() {
 	if c != nil {
 		return
 	}
-	bucketname := Ini_Str("tx_cos_bucketname")
-	appid := Ini_Str("tx_cos_appid")
-	region := Ini_Str("tx_cos_region")
-	secretId := Ini_Str("tx_cos_secretId")
-	secretKey := Ini_Str("tx_cos_secretKey")
+	bucketname := Ini_Str("tx.cos_bucketname")
+	appid := Ini_Str("tx.cos_appid")
+	region := Ini_Str("tx.cos_region")
+	secretId := Ini_Str("tx.cos_secretId")
+	secretKey := Ini_Str("tx.cos_secretKey")
 	if bucketname == "" || secretId == "" || secretKey == "" || appid == "" || region == "" {
-		panic(errors.New("请在conf/app.conf中配置腾讯云参数,tx_cos_bucketname," +
-			"tx_cos_appid,tx_cos_region,tx_cos_secretId,tx_cos_secretKey"))
+		panic(errors.New("请在conf/app.conf中配置腾讯云参数,tx.cos_bucketname," +
+			"tx.cos_appid,tx.cos_region,tx.cos_secretId,tx.cos_secretKey"))
 	}
 	u, _ := url.Parse(fmt.Sprintf("http://%s-%s.cos.%s.myqcloud.com", bucketname, appid, region))
 	b := &cos.BaseURL{BucketURL: u}
