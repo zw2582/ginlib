@@ -15,12 +15,14 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-ini/ini v1.62.0
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/jolestar/go-commons-pool v2.0.0+incompatible // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.17
 	github.com/xormplus/builder v0.0.0-20200331055651-240ff40009be // indirect
 	github.com/xormplus/xorm v0.0.0-20201213020207-d4eee8f4037a
+	go.mongodb.org/mongo-driver v1.5.0 // indirect
 	go.uber.org/zap v1.16.0
 	golang.org/x/text v0.3.4
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4 // indirect
