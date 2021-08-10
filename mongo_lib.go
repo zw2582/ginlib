@@ -22,6 +22,7 @@ var (
 type MongoDbFunc func(collection *mongo.Collection)
 
 //初始化mongodb
+//这个代码是没用的，哈哈，因为mongo sdk自带了连接池，我真傻
 func InitMongoDb()  {
 	mongoHost := Ini_Str("mongo.host", "localhost")
 	mongoPort := Ini_Str("mongo.port", "27017")
