@@ -41,6 +41,7 @@ func CreateLogger(logpath, loglevel string, compress bool, rotateSig syscall.Sig
 		MaxAge:     30,
 		MaxBackups: 7,
 		Compress:   compress,
+		LocalTime: true,
 	}
 
 	// 接收信号切割
