@@ -84,7 +84,7 @@ func CreateLogger(logpath, loglevel string, compress bool, rotateSig syscall.Sig
 		MessageKey:     "msg",
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.CapitalColorLevelEncoder,  // 大写编码器
+		EncodeLevel:    zapcore.CapitalLevelEncoder,  // 大写编码器
 		EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000"),     // ISO8601 UTC 时间格式
 		EncodeDuration: zapcore.SecondsDurationEncoder, //
 		EncodeCaller:   zapcore.ShortCallerEncoder,      // 全路径编码器
