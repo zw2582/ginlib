@@ -10,8 +10,10 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"os/signal"
 	"runtime/debug"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -20,26 +22,36 @@ var (
 )
 
 //InitLogger 初始化日志文件
-func InitLogger() *zap.Logger {
+func InitLogger(rotateSig ...syscall.Signal) *zap.Logger {
 	log.Println("初始化日志文件")
-
 	logpath := Ini_Str("log.path", "./logs/project.log")
-
 	loglevel := Ini_Str("log.level")
+	compress := Ini_Bool("log.compress", false)
 
-	Logger = CreateLogger(logpath, loglevel)
+	Logger = CreateLogger(logpath, loglevel, compress, rotateSig[0])
 
 	return Logger
 }
 
 //CreateLogger 创建zaplogger
-func CreateLogger(logpath, loglevel string) *zap.Logger {
+func CreateLogger(logpath, loglevel string, compress bool, rotateSig syscall.Signal) *zap.Logger {
 	hook := lumberjack.Logger{
 		Filename:   logpath,  //日志文件路径
 		MaxSize:    128, //最大字节
 		MaxAge:     30,
 		MaxBackups: 7,
-		Compress:   true,
+		Compress:   compress,
+	}
+
+	// 接收信号切割
+	if rotateSig > 0 {
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, rotateSig)
+		go func() {
+			for _ = range sigs {
+				hook.Rotate()
+			}
+		}()
 	}
 	w := zapcore.AddSync(&hook)
 	env := Ini_Str("app.env")

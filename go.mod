@@ -10,20 +10,25 @@ require (
 	github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 // indirect
 	github.com/astaxie/beego v1.12.3
 	github.com/bndr/gotabulate v1.1.2 // indirect
+	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-ini/ini v1.62.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/jolestar/go-commons-pool v2.0.0+incompatible // indirect
+	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.17
 	github.com/xormplus/builder v0.0.0-20200331055651-240ff40009be // indirect
 	github.com/xormplus/xorm v0.0.0-20201213020207-d4eee8f4037a
-	go.mongodb.org/mongo-driver v1.5.0 // indirect
+	go.mongodb.org/mongo-driver v1.5.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/text v0.3.4
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4 // indirect
+	gopkg.in/ini.v1 v1.62.0 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
