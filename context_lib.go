@@ -83,3 +83,20 @@ func (this *Context) InputFloat64(key string, defs ...float64) float64 {
 
 	return t
 }
+
+func (this *Context) InputInt64(key string, defs ...int64) int64 {
+	def := int64(0)
+	if len(defs) > 0 {
+		def = defs[0]
+	}
+	val := this.Query(key)
+	if val == "" {
+		val = this.PostForm(key)
+	}
+	if val == "" {
+		return def
+	}
+	t,_ := strconv.ParseInt(val, 10, 64)
+
+	return t
+}
