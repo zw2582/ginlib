@@ -28,13 +28,13 @@ func InitLogger(rotateSig ...syscall.Signal) *zap.Logger {
 	loglevel := Ini_Str("log.level")
 	compress := Ini_Bool("log.compress", false)
 
-	Logger = CreateLogger(logpath, loglevel, compress, rotateSig[0])
+	Logger = CreateLogger(logpath, loglevel, compress, rotateSig...)
 
 	return Logger
 }
 
 //CreateLogger 创建zaplogger
-func CreateLogger(logpath, loglevel string, compress bool, rotateSig syscall.Signal) *zap.Logger {
+func CreateLogger(logpath, loglevel string, compress bool, rotateSig ...syscall.Signal) *zap.Logger {
 	hook := lumberjack.Logger{
 		Filename:   logpath,  //日志文件路径
 		MaxSize:    128, //最大字节
@@ -45,9 +45,9 @@ func CreateLogger(logpath, loglevel string, compress bool, rotateSig syscall.Sig
 	}
 
 	// 接收信号切割
-	if rotateSig > 0 {
+	if len(rotateSig) > 0 {
 		sigs := make(chan os.Signal, 1)
-		signal.Notify(sigs, rotateSig)
+		signal.Notify(sigs, rotateSig[0])
 		go func() {
 			for _ = range sigs {
 				hook.Rotate()
