@@ -2,6 +2,7 @@ package tests
 
 import (
 	"github.com/zw2582/ginlib"
+	"strings"
 	"testing"
 	"time"
 )
@@ -30,4 +31,12 @@ func TestRedisCache(t *testing.T)  {
 	})
 
 	t.Log("a:", a)
+}
+
+func TestSplit(t *testing.T)  {
+	a := ""
+
+	aa := strings.Split(a, ",")
+
+	t.Log(len(aa), aa)
 }

@@ -24,7 +24,8 @@ var (
 //InitLogger 初始化日志文件
 func InitLogger(rotateSig ...syscall.Signal) *zap.Logger {
 	log.Println("初始化日志文件")
-	logpath := Ini_Str("log.path", "./logs/project.log")
+	//log.path 使用","表示多个日志文件，如果日志文件是system，则走系统输出
+	logpath := Ini_Str("log.path")
 	loglevel := Ini_Str("log.level")
 	compress := Ini_Bool("log.compress", false)
 
@@ -35,32 +36,43 @@ func InitLogger(rotateSig ...syscall.Signal) *zap.Logger {
 
 //CreateLogger 创建zaplogger
 func CreateLogger(logpath, loglevel string, compress bool, rotateSig ...syscall.Signal) *zap.Logger {
-	hook := lumberjack.Logger{
-		Filename:   logpath,  //日志文件路径
-		MaxSize:    128, //最大字节
-		MaxAge:     30,
-		MaxBackups: 7,
-		Compress:   compress,
-		LocalTime: true,
-	}
-
-	// 接收信号切割
-	if len(rotateSig) > 0 {
-		sigs := make(chan os.Signal, 1)
-		signal.Notify(sigs, rotateSig[0])
-		go func() {
-			for _ = range sigs {
-				hook.Rotate()
+	logPaths := strings.Split(logpath, ",")
+	hooks := make([]zapcore.WriteSyncer, 0)
+	for _, val := range logPaths {
+		val = strings.Trim(val, " ")
+		if val == "" {
+			continue
+		}
+		if val == "system" {
+			hooks = append(hooks, zapcore.AddSync(os.Stdout))
+		} else {
+			hook := lumberjack.Logger{
+				Filename:   val,  //日志文件路径
+				MaxSize:    128, //最大字节
+				MaxAge:     30,
+				MaxBackups: 7,
+				Compress:   compress,
+				LocalTime: true,
 			}
-		}()
-	}
-	w := zapcore.AddSync(&hook)
-	env := Ini_Str("app.env")
-	if env == "dev" {
-		//开发环境打印控制台
-		w = zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook))
+			// 接收信号切割
+			if len(rotateSig) > 0 {
+				sigs := make(chan os.Signal, 1)
+				signal.Notify(sigs, rotateSig[0])
+				go func() {
+					for _ = range sigs {
+						hook.Rotate()
+					}
+				}()
+			}
+			hooks = append(hooks, zapcore.AddSync(&hook))
+		}
 	}
 
+	//没有日志写入钩子时，使用默认系统输出
+	if len(hooks) == 0 {
+		hooks = append(hooks, zapcore.AddSync(os.Stdout))
+	}
+	w := zapcore.NewMultiWriteSyncer(hooks...)
 	// 设置日志级别,debug可以打印出info,debug,warn；info级别可以打印warn，info；warn只能打印warn
 	// debug->info->warn->error
 	var level zapcore.Level
