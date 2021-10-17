@@ -7,22 +7,84 @@ import (
 	"time"
 )
 
-//TaskFun 执行任务的方法
-type TaskFun func()
+//TickerTaskService 该服务用于异步定时执行一些方法，同时，如果任务的上一个周期没有执行结束，本次定时即使到了也不会执行
+type TickerTaskService struct {
+	taskList []*TickerTask
+	Log *logs.BeeLogger
+}
 
-//Task 任务
-type Task struct {
+//AddTask 创建任务
+func (this *TickerTaskService) AddTask(name string, d time.Duration, f TickerTaskFun) {
+	t := &TickerTask{
+		d:d,
+		f:f,
+		name:name,
+		doing:false,
+		log:this.Log,
+	}
+	this.taskList = append(this.taskList, t)
+}
+
+//TaskSingleStart 开始单任务执行启动
+func (this *TickerTaskService)TaskSingleStart() {
+	this.getLog().Info("启动单任务处理定时任务服务...")
+	for _,task := range this.taskList {
+		task.execSingle()
+	}
+	//定义秒级定时器
+	t := time.NewTicker(time.Second)
+
+	for _ = range t.C {
+		for _,task := range this.taskList {
+			if time.Now().Sub(task.lastTime) >= task.d {
+				task.execSingle()
+			}
+		}
+	}
+}
+
+//TaskSingleStart2 将TaskSingleStart的ticker实现改为sleep实现，对比效果
+func (this *TickerTaskService)TaskSingleStart2() {
+	for {
+		for _,task := range this.taskList {
+			if time.Now().Sub(task.lastTime) >= task.d {
+				task.execSingle()
+			}
+		}
+		time.Sleep(time.Second)
+	}
+}
+
+func (this *TickerTaskService) getLog() *logs.BeeLogger {
+	if this.Log != nil {
+		return this.Log
+	}
+	return logs.GetBeeLogger()
+}
+
+func (this *TickerTask) getLog() *logs.BeeLogger {
+	if this.log != nil {
+		return this.log
+	}
+	return logs.GetBeeLogger()
+}
+
+//TickerTaskFun 执行任务的方法
+type TickerTaskFun func()
+
+//TickerTask 任务
+type TickerTask struct {
 	lastTime time.Time
-	d time.Duration
-	f TaskFun
-	name string
-	doing bool //是否正在执行
-	lock sync.Mutex
+	d        time.Duration
+	f        TickerTaskFun
+	name     string
+	doing    bool //是否正在执行
+	lock     sync.Mutex
 	log *logs.BeeLogger
 }
 
 //execSingle 单任务异步执行任务
-func (this *Task) execSingle() {
+func (this *TickerTask) execSingle() {
 	this.getLog().Debug("task:%s 定时器监测到需要执行,lastTime:%s", this.name, this.lastTime.Format("2006-01-02 15:04:05"))
 
 	//排除重复执行
@@ -53,66 +115,4 @@ func (this *Task) execSingle() {
 		this.f()
 	}()
 
-}
-
-//TaskService 任务服务
-type TaskService struct {
-	taskList []*Task
-	Log *logs.BeeLogger
-}
-
-//AddTask 创建任务
-func (this *TaskService) AddTask(name string, d time.Duration, f TaskFun) {
-	t := &Task{
-		d:d,
-		f:f,
-		name:name,
-		doing:false,
-		log:this.Log,
-	}
-	this.taskList = append(this.taskList, t)
-}
-
-//TaskSingleStart 开始单任务执行启动
-func (this *TaskService)TaskSingleStart() {
-	this.getLog().Info("启动单任务处理定时任务服务...")
-	for _,task := range this.taskList {
-		task.execSingle()
-	}
-	//定义秒级定时器
-	t := time.NewTicker(time.Second)
-
-	for _ = range t.C {
-		for _,task := range this.taskList {
-			if time.Now().Sub(task.lastTime) >= task.d {
-				task.execSingle()
-			}
-		}
-	}
-}
-
-//TaskSingleStart2 将TaskSingleStart的ticker实现改为sleep实现，对比效果
-func (this *TaskService)TaskSingleStart2() {
-	for {
-		for _,task := range this.taskList {
-			if time.Now().Sub(task.lastTime) >= task.d {
-				task.execSingle()
-			}
-		}
-		time.Sleep(time.Second)
-	}
-}
-
-func (this *TaskService) getLog() *logs.BeeLogger {
-	if this.Log != nil {
-		return this.Log
-	}
-	return logs.GetBeeLogger()
-}
-
-func (this *Task) getLog() *logs.BeeLogger {
-	if this.log != nil {
-		return this.log
-	}
-	return logs.GetBeeLogger()
 }
