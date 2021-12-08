@@ -1,7 +1,7 @@
 package ginlib
 
 import (
-	"github.com/astaxie/beego/logs"
+	"fmt"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -10,7 +10,6 @@ import (
 //TickerTaskService 该服务用于异步定时执行一些方法，同时，如果任务的上一个周期没有执行结束，本次定时即使到了也不会执行
 type TickerTaskService struct {
 	taskList []*TickerTask
-	Log *logs.BeeLogger
 }
 
 //AddTask 创建任务
@@ -20,14 +19,13 @@ func (this *TickerTaskService) AddTask(name string, d time.Duration, f TickerTas
 		f:f,
 		name:name,
 		doing:false,
-		log:this.Log,
 	}
 	this.taskList = append(this.taskList, t)
 }
 
 //TaskSingleStart 开始单任务执行启动
 func (this *TickerTaskService)TaskSingleStart() {
-	this.getLog().Info("启动单任务处理定时任务服务...")
+	Logger.Info("启动单任务处理定时任务服务...")
 	for _,task := range this.taskList {
 		task.execSingle()
 	}
@@ -55,20 +53,6 @@ func (this *TickerTaskService)TaskSingleStart2() {
 	}
 }
 
-func (this *TickerTaskService) getLog() *logs.BeeLogger {
-	if this.Log != nil {
-		return this.Log
-	}
-	return logs.GetBeeLogger()
-}
-
-func (this *TickerTask) getLog() *logs.BeeLogger {
-	if this.log != nil {
-		return this.log
-	}
-	return logs.GetBeeLogger()
-}
-
 //TickerTaskFun 执行任务的方法
 type TickerTaskFun func()
 
@@ -80,17 +64,16 @@ type TickerTask struct {
 	name     string
 	doing    bool //是否正在执行
 	lock     sync.Mutex
-	log *logs.BeeLogger
 }
 
 //execSingle 单任务异步执行任务
 func (this *TickerTask) execSingle() {
-	this.getLog().Debug("task:%s 定时器监测到需要执行,lastTime:%s", this.name, this.lastTime.Format("2006-01-02 15:04:05"))
+	Logger.Debug(fmt.Sprintf("task:%s 定时器监测到需要执行,lastTime:%s", this.name, this.lastTime.Format("2006-01-02 15:04:05")))
 
 	//排除重复执行
 	this.lock.Lock()
 	if this.doing {
-		this.getLog().Debug("task:%s 存在进程正在执行，本次执行中断", this.name)
+		Logger.Debug(fmt.Sprintf("task:%s 存在进程正在执行，本次执行中断", this.name))
 		this.lock.Unlock()
 		return
 	}
@@ -104,14 +87,14 @@ func (this *TickerTask) execSingle() {
 		//定义异常记录
 		defer func() {
 			if err := recover(); err != nil {
-				this.getLog().Error("task:%s 异常:%s trace:%s", this.name, err, debug.Stack())
+				Logger.Error(fmt.Sprintf("task:%s 异常:%s trace:%s", this.name, err, debug.Stack()))
 			}
 			this.lock.Lock()
 			this.doing = false
 			this.lock.Unlock()
 		}()
 		//执行任务
-		this.getLog().Debug("task:%s 开始执行任务", this.name)
+		Logger.Debug(fmt.Sprintf("task:%s 开始执行任务", this.name))
 		this.f()
 	}()
 

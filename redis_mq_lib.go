@@ -33,7 +33,7 @@ func NewRedisMq(queueName string, redisCli *redis.Client) RedisMq {
 
 	//每隔一段时间修复消息队列,filterRepeatKey 用于多个进程同时修复时，只有一个进程有修复权限
 	filterRepeatKey := fmt.Sprintf("%s_filter", cli.hashRepeatCntName)
-	GoCoveryLoop("间隔5分钟修复消息队列:"+cli.hashRepeatCntName, func() {
+	go func() {
 		d := time.Minute * 5 //修复间隔时间
 		//启动先修复一次
 		if redisCli.SetNX(filterRepeatKey, 1, d - time.Second).Val() {
@@ -48,21 +48,21 @@ func NewRedisMq(queueName string, redisCli *redis.Client) RedisMq {
 				cli.Repeat()
 			}
 		}
-	})
+	}()
 
 	return cli
 }
 
 //PushMessage 塞入消息
-func (this *RedisMq) PushMessage(msg string) int64 {
+func (this *RedisMq) PushMessage(msg string) (int64, error) {
 	if msg == "" {
-		return 0
+		return 0, nil
 	}
 
 	if val, err := this.redisCli.LPush(this.queueName, msg).Result(); err != nil {
-		panic(err)
+		return 0, err
 	} else {
-		return val
+		return val, nil
 	}
 }
 

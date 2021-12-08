@@ -1,7 +1,6 @@
 package ginlib
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/go-ini/ini"
 	"log"
 	"strings"
@@ -28,17 +27,6 @@ func InitIni(inipath ...string)  {
 	}
 	iniFile = t
 	//设置gin运行环境
-	env := iniFile.Section("app").Key("env").Value()
-	switch env {
-	case "dev":
-		gin.SetMode(gin.DebugMode)
-	case "test":
-		gin.SetMode(gin.TestMode)
-	case "prod":
-		gin.SetMode(gin.ReleaseMode)
-	default:
-		gin.SetMode(gin.DebugMode)
-	}
 	APP_NAME = iniFile.Section("app").Key("name").Value()
 	APP_HOST = iniFile.Section("app").Key("host").Value()
 	APP_PORT = iniFile.Section("app").Key("port").Value()
