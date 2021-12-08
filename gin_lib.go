@@ -123,7 +123,7 @@ func GinLogger() gin.HandlerFunc {
 func NoticeDingtalk(obj gin.H) (bs []byte, err error) {
 	contentByte, _ := json.MarshalIndent(obj, "", "\t")
 	content := strings.Replace(string(contentByte), "\"", "", -1)
-	s := `{"msgtype": "text","text": {"content": "panic:` + APP_NAME + "[" + APP_ENV + "]\n" + content + `"}}`
+	s := `{"msgtype": "text","text": {"content": "panic:` + APP_NAME + "[" + GetEnv() + "]\n" + content + `"}}`
 
 	dingAccessToken := Ini_Str("ding.access_token")
 	Secret := Ini_Str("ding.secret")

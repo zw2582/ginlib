@@ -3,6 +3,7 @@ package ginlib
 import (
 	"github.com/go-ini/ini"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -11,7 +12,6 @@ var (
 	APP_NAME string
 	APP_HOST string
 	APP_PORT string
-	APP_ENV string
 )
 
 //InitIni 初始化加载配置文件
@@ -30,7 +30,6 @@ func InitIni(inipath ...string)  {
 	APP_NAME = iniFile.Section("app").Key("name").Value()
 	APP_HOST = iniFile.Section("app").Key("host").Value()
 	APP_PORT = iniFile.Section("app").Key("port").Value()
-	APP_ENV = iniFile.Section("app").Key("env").Value()
 }
 
 //Ini_Str 读取配置文件信息 key格式可以是“section.key”
@@ -93,4 +92,13 @@ func Ini_Bool(key string, defaults ...bool) bool {
 		return def
 	}
 	return value
+}
+
+//GetEnv 获取环境变量:ENVIRON
+func GetEnv() string {
+	env := os.Getenv("ENVIRON")
+	if env == "" {
+		return "dev"
+	}
+	return env
 }
