@@ -68,8 +68,7 @@ func WxPhoneCodeSend(phone, code string) (err error) {
 }
 
 // WxPaymentOrder 微信支付
-func WxPaymentOrder(orderNo string, amount int, productDesc string) (prepayId string) {
-	notifyUrl := Ini_Str("app.app_url")+"/api/user/payment/notify"
+func WxPaymentOrder(orderNo string, amount int, productDesc, notifyUrl string) (prepayId string) {
 	data := gin.H{
 		"appid":Ini_Str("weixin.app_id"),
 		"mchid":Ini_Str("weixin.mchid"),
