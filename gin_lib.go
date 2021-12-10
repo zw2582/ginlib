@@ -242,8 +242,8 @@ func (this *Context) InputInt(key string, defs ...int) int {
 	return t
 }
 
-func (this *Context) InputFloat64(key string, defs ...float64) float64 {
-	var def float64
+func (this *Context) InputInt32(key string, defs ...int32) int32 {
+	def := int32(0)
 	if len(defs) > 0 {
 		def = defs[0]
 	}
@@ -254,9 +254,9 @@ func (this *Context) InputFloat64(key string, defs ...float64) float64 {
 	if val == "" {
 		return def
 	}
-	t,_ := strconv.ParseFloat(val, 64)
+	t,_ := strconv.ParseInt(val, 10, 32)
 
-	return t
+	return int32(t)
 }
 
 func (this *Context) InputInt64(key string, defs ...int64) int64 {
@@ -272,6 +272,40 @@ func (this *Context) InputInt64(key string, defs ...int64) int64 {
 		return def
 	}
 	t,_ := strconv.ParseInt(val, 10, 64)
+
+	return t
+}
+
+func (this *Context) InputFloat32(key string, defs ...float32) float32 {
+	var def float32
+	if len(defs) > 0 {
+		def = defs[0]
+	}
+	val := this.Query(key)
+	if val == "" {
+		val = this.PostForm(key)
+	}
+	if val == "" {
+		return def
+	}
+	t,_ := strconv.ParseFloat(val, 32)
+
+	return float32(t)
+}
+
+func (this *Context) InputFloat64(key string, defs ...float64) float64 {
+	var def float64
+	if len(defs) > 0 {
+		def = defs[0]
+	}
+	val := this.Query(key)
+	if val == "" {
+		val = this.PostForm(key)
+	}
+	if val == "" {
+		return def
+	}
+	t,_ := strconv.ParseFloat(val, 64)
 
 	return t
 }
