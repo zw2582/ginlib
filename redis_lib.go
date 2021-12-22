@@ -35,7 +35,7 @@ func InitRedis()  {
 	}
 }
 
-//RedisCache 缓存查询
+//RedisCache 缓存查询，该方法当对象含有interface{}时慎用，可能会出现精度问题
 func RedisCache(cacheKey string, d interface{}, ex time.Duration, f func() (interface{})) {
 	//存在缓存查询缓存
 	if v := RedisCli.Get(cacheKey); v != nil && v.Val() != "" {
