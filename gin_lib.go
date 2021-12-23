@@ -1,6 +1,7 @@
 package ginlib
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -9,14 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"os/signal"
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -26,10 +30,8 @@ func GoRecover(fun func()) (err error) {
 			switch val := e.(type) {
 			case error:
 				err = val
-				Logger.Error("GoRecover捕获panic", zap.Error(val), zap.Stack("GoRecover"))
 			default:
 				err = fmt.Errorf("%+v\n", val)
-				Logger.Error("GoRecover捕获panic", zap.Any("err", val), zap.Stack("GoRecover"))
 			}
 		}
 	}()
@@ -346,4 +348,35 @@ func (this *Context) InnerReturn(code int, data interface{}, msg string) {
 		msg = string(tmp)
 	}
 	this.String(http.StatusOK, "%d%s", msg)
+}
+
+//GracefulExitWeb 具备优雅停止web服务的启动方式
+func GracefulExitWeb(engine *gin.Engine, host, port string) {
+	log.Println("web服务启动, listen:"+host+":"+port)
+	srv := &http.Server{
+		Addr:    net.JoinHostPort(host, port),
+		Handler: engine,
+	}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Println("server listen failed! error:", err.Error())
+		}
+	}()
+
+	// 平滑重启
+	ch := make(chan os.Signal)
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
+	sig := <-ch
+
+	log.Println("got a signal", sig)
+	now := time.Now()
+	cxt, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+	err := srv.Shutdown(cxt)
+	if err != nil{
+		log.Println("err", err)
+	}
+
+	// 看看实际退出所耗费的时间
+	log.Println("------exited--------", time.Since(now))
 }
