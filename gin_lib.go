@@ -371,7 +371,10 @@ func GracefulExitWeb(engine *gin.Engine, host, port string) {
 	log.Println("got a signal", sig)
 	now := time.Now()
 	cxt, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
-	defer cancel()
+	defer func() {
+		cancel()
+		os.Exit(0)
+	}()
 	err := srv.Shutdown(cxt)
 	if err != nil{
 		log.Println("err", err)
