@@ -81,6 +81,7 @@ func WxPhoneCodeSend(phone, code string) (err error) {
 }
 
 // WxPaymentOrder 微信支付
+// @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_1.shtml
 func WxPaymentOrder(orderNo string, amount int, productDesc, notifyUrl string) (prepayId string, err error) {
 	data := gin.H{
 		"appid":        Ini_Str("weixin.app_id"),
@@ -122,6 +123,7 @@ func WxPaymentOrder(orderNo string, amount int, productDesc, notifyUrl string) (
 }
 
 //WxPaymentParam 构造客户端唤起参数
+// @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_1.shtml
 func WxPaymentParam(prepayId string) (result gin.H) {
 	appId := Ini_Str("weixin.app_id")
 	mchId := Ini_Str("weixin.mchid")
@@ -141,16 +143,31 @@ func WxPaymentParam(prepayId string) (result gin.H) {
 	}
 }
 
-//WxPaymentResult 微信支付结果查询
-//交易状态，枚举值：
-//SUCCESS：支付成功
-//REFUND：转入退款
-//NOTPAY：未支付
-//CLOSED：已关闭
-//REVOKED：已撤销（仅付款码支付会返回）
-//USERPAYING：用户支付中（仅付款码支付会返回）
-//PAYERROR：支付失败（仅付款码支付会返回）
-func WxPaymentResult(orderNo string) (tradeState string, err error) {
+type WxPaymentResult struct {
+	Amount struct{
+		Currency string `json:"currency"`
+		PayerCurrency string `json:"payer_currency"`
+		PayerTotal int `json:"payer_total"`
+		Total int `json:"total"`
+	} `json:"amount"`
+	AppId string `json:"appid"`
+	Attach string `json:"attach"`
+	BankType string `json:"bank_type"`
+	Mchid string `json:"mchid"`
+	OutTradeNo string `json:"out_trade_no"`
+	Payer struct{
+		OpenId string `json:"openid"`
+	} `json:"payer"`
+	SuccessTime string `json:"success_time"`
+	TradeState string `json:"trade_state"`
+	TradeStateDesc string `json:"trade_state_desc"`
+	TradeType string `json:"trade_type"`
+	TransactionId string `json:"transaction_id"`
+}
+
+//WxPaymentResultGet 微信支付结果查询
+// @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_1.shtml
+func WxPaymentResultGet(orderNo string) (result WxPaymentResult, err error) {
 	mchId := Ini_Str("weixin.mchid")
 	//发起查询
 	resp, err := http.Get(fmt.Sprintf("https://api.mch.weixin.qq.com/v3/pay/transactions/out-trade-no/%s?mchid=%s", orderNo, mchId))
@@ -168,10 +185,9 @@ func WxPaymentResult(orderNo string) (tradeState string, err error) {
 		return
 	}
 	//解析结果
-	result := gin.H{}
 	if err = json.Unmarshal(res, &result); err != nil {
 		return
 	}
 
-	return result["trade_state"].(string), nil
+	return
 }
