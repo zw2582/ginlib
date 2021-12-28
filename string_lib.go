@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
-	"io"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -72,14 +72,9 @@ func Md5encode(src string) string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(src)))
 }
 
-//生成Guid字串
+//UniqueId 生成GUUID字串，长度24位
 func UniqueId() string {
-	b := make([]byte, 48)
-
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return ""
-	}
-	return Md5encode(base64.URLEncoding.EncodeToString(b))
+	return bson.NewObjectId().Hex()
 }
 
 func OrderNo(prefix string) string {

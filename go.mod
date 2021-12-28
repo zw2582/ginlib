@@ -27,5 +27,6 @@ require (
 	golang.org/x/text v0.3.4
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
