@@ -24,7 +24,8 @@ import (
 	"time"
 )
 
-func GoRecover(fun func()) (err error) {
+//Recover 覆盖panic，提取错误
+func Recover(fun func()) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			switch val := e.(type) {
