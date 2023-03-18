@@ -267,3 +267,32 @@ func VersionCompare(v1, v2 , operator string) bool {
 	}
 	return false
 }
+
+//RandPassword 生成随机密码
+func RandPassword(length int) (string, error) {
+	randData := make([]byte, length)
+	_, err := rand.Read(randData)
+
+	r := make([]rune, 0)
+	rules := [][]int{
+		{96, 123}, {64, 91}, {47, 58}, {34, 39},
+	}
+	for _, val := range randData {
+		tmp := int(val)
+		matched := false
+		for _, rule := range rules {
+			if tmp <= rule[0] {
+				continue
+			}
+			if tmp = tmp % rule[1]; tmp > rule[0] {
+				r = append(r, rune(tmp))
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			r = append(r, rune((tmp%10)+48))
+		}
+	}
+	return string(r), err
+}
