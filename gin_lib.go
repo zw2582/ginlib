@@ -41,63 +41,15 @@ func Recover(fun func()) (err error) {
 }
 
 // GinRecovery 接受gin框架http中panic的错误
-func GinRecovery(stack bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				// Check for a broken connection, as it is not really a
-				// condition that warrants a panic stack trace.
-				var brokenPipe bool
-				if ne, ok := err.(*net.OpError); ok {
-					if se, ok := ne.Err.(*os.SyscallError); ok {
-						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
-							brokenPipe = true
-						}
-					}
-				}
+func GinRecovery() gin.HandlerFunc {
+	return gin.RecoveryWithWriter(&recoveryLogger{})
+}
 
-				httpRequest, _ := httputil.DumpRequest(c.Request, false)
-				if brokenPipe {
-					Logger.Error(c.Request.URL.Path,
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
-					// If the connection is dead, we can't write a status to it.
-					c.Error(err.(error)) // nolint: errcheck
-					c.Abort()
-					return
-				}
+type recoveryLogger struct{}
 
-				if stack {
-					// 增加dingtalk
-					NoticeDingtalk(gin.H{
-						"error":   fmt.Sprintf("%v", err),
-						"request": string(httpRequest),
-						"trace":   string(debug.Stack()),
-					})
-					Logger.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-						zap.StackSkip("track", 1),
-						//zap.String("stack", string(debug.Stack())),
-					)
-				} else {
-					// 增加dingtalk
-					NoticeDingtalk(gin.H{
-						"error":   fmt.Sprintf("%v", err),
-						"request": string(httpRequest),
-						"trace":   string(debug.Stack()),
-					})
-					Logger.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
-				}
-				c.AbortWithStatus(http.StatusInternalServerError)
-			}
-		}()
-		c.Next()
-	}
+func (r recoveryLogger) Write(p []byte) (n int, err error) {
+	Logger.Error(string(p))
+	return len(p), nil
 }
 
 // GinLogger 接收gin框架的http请求日志，通常不使用
