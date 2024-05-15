@@ -1,4 +1,4 @@
-package abo
+package ginlib
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ var (
 
 // Init 阿波罗客户端
 func Init(project string, opt ...ApoOption) {
-	loggerDefaultInit(project)
+	//loggerDefaultInit(project)
 	ProjectName = project
 
 	//定义默认参数
@@ -41,7 +41,6 @@ func Init(project string, opt ...ApoOption) {
 	Logger.Info("初始化Apollo配置成功")
 
 	//初始化日志
-	loggerDefaultInit(project)
 }
 
 func apolloStorageCreate(cluster, defaultIp, defaultAppId, defaultSecret string, opt ...ApoOption) *storage.Config {
@@ -243,7 +242,6 @@ func (a apolloChangeLister) OnChange(event *storage.ChangeEvent) {
 	}
 	if logChanged {
 		Logger.Info("重启logger")
-		loggerDefaultInit(ProjectName)
 	}
 }
 

@@ -2,18 +2,22 @@ package ginlib
 
 import "time"
 
-//DateSunDayFmt 查询本周周日是几号
-func DateSunDayFmt(t time.Time) string {
-	return DateSunDay(t).Format("2006-01-02")
+// LocalUtc7 获取utc+7时区
+func LocalUtc7() *time.Location {
+	//获取越南时间
+	loc, err := time.LoadLocation("Asia/Ho_Chi_Minh")
+	if err != nil {
+		panic(err)
+	}
+	return loc
 }
 
-func DateSunDay(t time.Time) time.Time {
-	day := t.Weekday()
-	if day == 0 {
-		day = 7
-		day = 7
+// LocalUtc3 获取utc+3时区
+func LocalUtc3() *time.Location {
+	//获取莫斯科时间
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		panic(err)
 	}
-	//本周周日是几号
-	endDay := t.Add(time.Hour * 24 * time.Duration(7-day))
-	return endDay
+	return loc
 }

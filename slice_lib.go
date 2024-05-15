@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//IndexOf 判断元素是否存在于slice中
+// IndexOf 判断元素是否存在于slice中
 func IndexOf(larr interface{}, a interface{}) int {
 	v := reflect.ValueOf(a)
 	arr := reflect.ValueOf(larr)
@@ -45,7 +45,7 @@ func RandSlice(slice interface{}) interface{} {
 
 type MapFunc func(i int, val interface{}) interface{}
 
-//SliceMap map slice
+// SliceMap map slice
 func SliceMap(slice interface{}, fn MapFunc) interface{} {
 	v := reflect.ValueOf(slice)
 	if v.Kind() != reflect.Slice {
@@ -94,11 +94,11 @@ func RemoveRepByLoop(slice interface{}) interface{} {
 		panic("type error")
 	}
 	// 存放结果
-	result := reflect.MakeSlice(reflect.TypeOf(slice),0, v.Len())
+	result := reflect.MakeSlice(reflect.TypeOf(slice), 0, v.Len())
 
-	for i:=0; i< v.Len(); i++ {
+	for i := 0; i < v.Len(); i++ {
 		flag := true
-		for j :=0; j < result.Len(); j++ {
+		for j := 0; j < result.Len(); j++ {
 			if v.Index(i).Interface() == result.Index(j).Interface() {
 				flag = false // 存在重复元素，标识为false
 				break
@@ -119,11 +119,11 @@ func RemoveRepByMap(slc interface{}) interface{} {
 		panic("type error")
 	}
 	// 存放结果
-	result := reflect.MakeSlice(reflect.TypeOf(slc),0, v.Len())
+	result := reflect.MakeSlice(reflect.TypeOf(slc), 0, v.Len())
 	// 存放不重复主键
 	tempMap := reflect.MakeMap(reflect.TypeOf(map[interface{}]int{}))
 
-	for i:=0;i<v.Len();i++ {
+	for i := 0; i < v.Len(); i++ {
 		t := v.Index(i)
 		if tempMap.MapIndex(t) == reflect.ValueOf(nil) {
 			result = reflect.Append(result, t)
@@ -148,7 +148,7 @@ func RemoveRep(slc interface{}) interface{} {
 	}
 }
 
-//求切片的差集
+// 求切片的差集
 func DiffSlice(one, two interface{}) interface{} {
 	v1 := reflect.ValueOf(one)
 	if v1.Kind() != reflect.Slice {
@@ -160,11 +160,11 @@ func DiffSlice(one, two interface{}) interface{} {
 	}
 
 	// 存放结果
-	result := reflect.MakeSlice(reflect.TypeOf(one),0, v1.Len())
+	result := reflect.MakeSlice(reflect.TypeOf(one), 0, v1.Len())
 
-	for i:=0; i< v1.Len(); i++ {
+	for i := 0; i < v1.Len(); i++ {
 		flag := true
-		for j :=0; j < v2.Len(); j++ {
+		for j := 0; j < v2.Len(); j++ {
 			if v1.Index(i).Interface() == v2.Index(j).Interface() {
 				flag = false // 该值在v2集合中存在，不是差集，结束循环
 				break

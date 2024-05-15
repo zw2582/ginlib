@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-//截取字符串 start 起点下标 length 需要截取的长度
+// 截取字符串 start 起点下标 length 需要截取的长度
 func Substr(str string, start int, length int) string {
 	rs := []rune(str)
 	rl := len(rs)
@@ -51,7 +51,7 @@ func Substr(str string, start int, length int) string {
 	return string(rs[start:end])
 }
 
-//截取字符串 start 起点下标 end 终点下标(不包括)
+// 截取字符串 start 起点下标 end 终点下标(不包括)
 func Substr2(str string, start int, end int) string {
 	rs := []rune(str)
 	length := len(rs)
@@ -67,25 +67,25 @@ func Substr2(str string, start int, end int) string {
 	return string(rs[start:end])
 }
 
-//Md5encode md5编码
+// Md5encode md5编码
 func Md5encode(src string) string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(src)))
 }
 
-//UniqueId 生成GUUID字串，长度24位
+// UniqueId 生成GUUID字串，长度24位
 func UniqueId() string {
 	return bson.NewObjectId().Hex()
 }
 
 func OrderNo(prefix string) string {
-	rnss,_ := rand.Int(rand.Reader, new(big.Int).SetInt64(int64(9999)))
+	rnss, _ := rand.Int(rand.Reader, new(big.Int).SetInt64(int64(9999)))
 	rn := rnss.Int64()
 	rns := fmt.Sprintf("%04d", rn)
 	nowstr := time.Now().Format("20060102150405")
 	return fmt.Sprintf("%s%s%s", prefix, nowstr, rns)
 }
 
-//解析gbk
+// 解析gbk
 func DecodeGBK(s []byte) ([]byte, error) {
 	I := bytes.NewReader(s)
 	O := transform.NewReader(I, simplifiedchinese.GBK.NewDecoder())
@@ -108,14 +108,14 @@ func ValidEmail(email string) bool {
 	return reg.MatchString(email)
 }
 
-//ValidContainChinese 包含中文检测
+// ValidContainChinese 包含中文检测
 func ValidContainChinese(str string) bool {
 	const regular = `[^\x00-\x80]+`
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(str)
 }
 
-//ValidChineName 验证中文姓名
+// ValidChineName 验证中文姓名
 func ValidChineName(str string) bool {
 	const regular = "^[\u4E00-\u9FA5]{2,10}$"
 	reg := regexp.MustCompile(regular)
@@ -153,7 +153,7 @@ func SumMu(a bool, x, y interface{}) interface{} {
 	}
 }
 
-//InviteCode 根据id生成邀请码，id最大值为 4000000000
+// InviteCode 根据id生成邀请码，id最大值为 4000000000
 func InviteCode(id uint) (string, error) {
 	if id > 4000000000 {
 		return "", errors.New("数值太大")
@@ -169,21 +169,21 @@ func InviteCode(id uint) (string, error) {
 
 	if lessLen > 0 {
 		min := int(math.Pow10(lessLen))
-		t,_ := rand.Int(rand.Reader, big.NewInt(int64(min-1)))
+		t, _ := rand.Int(rand.Reader, big.NewInt(int64(min-1)))
 		buX = fmt.Sprintf("%X", int64(min)+t.Int64())
 
-		ru := []string{"G","H","I","J","K","L","M","N"}
-		buX = ru[lessLen-1]+buX
+		ru := []string{"G", "H", "I", "J", "K", "L", "M", "N"}
+		buX = ru[lessLen-1] + buX
 	}
 
-	return baseX+buX, nil
+	return baseX + buX, nil
 }
 
 // Compare 该函数比较两个版本号是否相等，是否大于或小于的关系
 // 返回值：0表示v1与v2相等；1表示v1大于v2；2表示v1小于v2
 func Compare(v1, v2 string) int {
 	// 替换一些常见的版本符号
-	replaceMap := map[string]string{"V":"","v": "", "-": "."}
+	replaceMap := map[string]string{"V": "", "v": "", "-": "."}
 	//keywords := {"alpha,beta,rc,p"}
 	for k, v := range replaceMap {
 		if strings.Contains(v1, k) {
@@ -231,18 +231,18 @@ func strSlice2IntSlice(strs []string) []int64 {
 	if len(strs) == 0 {
 		return []int64{}
 	}
-	retInt := make([]int64,0,len(strs))
-	for _,str:=range strs {
-		i,err := strconv.ParseInt(str,10,64)
+	retInt := make([]int64, 0, len(strs))
+	for _, str := range strs {
+		i, err := strconv.ParseInt(str, 10, 64)
 		if err == nil {
-			retInt = append(retInt,i)
+			retInt = append(retInt, i)
 		}
 	}
-	return  retInt
+	return retInt
 }
 
-func VersionCompare(v1, v2 , operator string) bool {
-	com := Compare(v1,v2)
+func VersionCompare(v1, v2, operator string) bool {
+	com := Compare(v1, v2)
 	switch operator {
 	case "==":
 		if com == 0 {
@@ -261,19 +261,23 @@ func VersionCompare(v1, v2 , operator string) bool {
 			return true
 		}
 	case ">=":
-		if com == 0 || com == 1{
+		if com == 0 || com == 1 {
 			return true
 		}
 	}
 	return false
 }
 
-//RandPassword 生成随机密码
+// RandPassword 生成随机密码
 func RandPassword(length int) (string, error) {
 	randData := make([]byte, length)
 	_, err := rand.Read(randData)
 
 	r := make([]rune, 0)
+	//特殊字符:35 ~ 38
+	//数字:48 ~ 57
+	//大写字母:65 ~ 90
+	//小写字母:97 ~ 122
 	rules := [][]int{
 		{96, 123}, {64, 91}, {47, 58}, {34, 39},
 	}
@@ -291,8 +295,17 @@ func RandPassword(length int) (string, error) {
 			}
 		}
 		if !matched {
+			//其余的归于归于数字
 			r = append(r, rune((tmp%10)+48))
 		}
 	}
 	return string(r), err
+}
+
+func Desensitize(word string) string {
+	if len(word) < 3 {
+		return word
+	}
+	sl := int(float64(len(word)) / 2.5)
+	return word[:sl-1] + strings.Repeat("*", sl) + word[2*sl-1:]
 }
